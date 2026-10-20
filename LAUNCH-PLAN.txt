@@ -1,0 +1,105 @@
+WARDOGS ZUID AFRIKA — BUILD AND LAUNCH PLAN
+Prepared 20 October 2026
+
+CONFIRMED
+Game: Wardogs. Community: Wardogs Zuid Afrika. South African hosting through GG Host.
+Two planned servers: Server 01 / 50 slots; Server 02 / 90 slots; total 140 planned slots.
+Discord: https://discord.gg/Vcq8dGTGcN
+Supporter price: $3. Preview assumes USD and monthly billing; confirm before sales.
+Launch target: next week, interpreted as 26 October–1 November 2026; not a fixed date.
+
+FIRST RELEASE
+Home, filterable server directory, individual server briefings, announcements,
+Discord links, draft rules/support, free Community and proposed Supporter information.
+Dark charcoal, muted olive map artwork, amber highlights, condensed headings.
+The SVG emblem is an editable placeholder, not a final trademark or game asset.
+Status values: planned / testing / live / offline. Edit dist/content.js to update listings.
+No server or database writes exist. Public source edits require a trusted site editor and redeploy.
+
+FUNCTIONAL PREVIEW
+Hash-based navigation, status filtering and empty results, server detail pages, real Discord links,
+FAQ disclosures, fictional leaderboards and player profiles, demo sorting, mobile menu,
+membership notice dialog and a temporary demo cancellation/reset interaction.
+Counts are unavailable rather than fabricated as online/offline or zero.
+Account screen is a visual demo. Staff page is informational: no public admin editor or login.
+No authentication, checkout, payment SDK, bot or private credentials in this build.
+The provider is disconnected; this is not yet an operational payment sandbox.
+
+PHASE 1 — PRE-LAUNCH INFORMATION HUB
+Confirm launch day, final server names/settings/maps/modes, connection addresses/join codes,
+rules, moderation/appeal process, support destination and branding. Verify Discord invite works
+for a visitor. Update copy in dist/content.js and page content in dist/app.js, then redeploy.
+Replace any stale relative launch copy on launch day. Switch statuses only after verification.
+Preview hosting begins private; public access and a custom domain are separate launch actions.
+
+PHASE 2 — REAL SERVER STATUS AND PLAYER DATA
+Obtain read-only access or server IDs from GG Host and the selected stats service.
+Candidate: WARDOGS NOW's documented public API, enabled per server, with stats tracking on.
+Its documentation describes server state/count, leaderboard and SteamID64 player endpoints.
+https://wardogsnow.com/developers/stats-api
+This third-party service is not connected or assumed to be included in GG Host.
+Verify compatibility, terms, uptime, permissions and costs with the provider.
+Map online to live, preserve manual planned/testing states, cache results, show last refresh,
+and report unavailable/stale data on failures. Demo stats must never silently appear as real.
+Game-specific metrics depend on the chosen service's collected fields. The preview's score
+is illustrative and is not a guaranteed Wardogs API field.
+If server feeds/plugins are needed, run an authenticated receiver and persistent store.
+Do not expose RCON administration or a private host panel directly to visitors.
+
+PHASE 3 — ACCOUNTS, MEMBERSHIPS AND STAFF TOOLS
+Use a server-backed application with Discord OAuth, secure HTTP-only sessions and durable storage.
+Proposed records: users, linked_identities, servers, announcements, membership_plans,
+subscriptions, payment_events, discord_role_jobs and audit_events.
+Use provider subscription IDs and verified webhooks as the billing source of truth.
+Verify webhook signatures, process each event once, reconcile missed events and separate sandbox/live.
+Member endpoints must enforce ownership for plans, invoices, renewal and cancellation.
+Owner: staff/plan configuration and content. Editor: server/announcement/featured content.
+Moderator: explicitly assigned support capabilities. Enforce roles server-side on every write;
+add audit history, input validation and anti-forgery protection. Hiding buttons is not authorization.
+Store keys in hosting secrets. No passwords, bot tokens or webhook secrets in dist/content.js.
+Discord role sync requires account consent, a bot with Manage Roles and a correctly ordered role.
+Retry sync failures; remove roles according to agreed grace/cancellation policy. Game perks need
+explicit permission and technical support. No pay-to-win benefit is advertised.
+
+PAYMENT RECOMMENDATION — EVALUATE PAYPAL SUBSCRIPTIONS FOR USD
+PayPal's South African page offers subscriptions and configurable plan currencies.
+https://www.paypal.com/za/business/accept-payments/checkout/recurring
+Confirm merchant eligibility, USD settlement/withdrawal arrangements and customer checkout before selection.
+Payfast is a local recurring-payment alternative if the base subscription price can be ZAR;
+its developer docs specify recurring subscription amounts in ZAR. Multi-currency display does
+not by itself establish a fixed USD recurring plan.
+https://developers.payfast.co.za/
+https://payfast.io/features/subscriptions/
+Payment integration must start in provider sandbox/test mode. Test signup, failed renewal,
+cancellation, refunds, duplicate/out-of-order webhooks and role removal. Keep live credentials
+absent until the owner explicitly approves live payments. Publish final terms/privacy/refund
+information and the exact amount, interval, currency and cancellation policy before collecting money.
+
+COSTS — PLANNING ALLOWANCES, NOT PROVIDER QUOTES
+Website: reserve $0–$15/month for a small information site; actual Sites plan, usage limits
+and any custom-domain support must be checked in the account. No hosting price was verified here.
+Domain: allow roughly $10–$30/year, depending on extension and registrar; obtain a current quote.
+Accounts/database/bot/monitoring later: initially budget another $5–$25/month, then revise from usage.
+GG Host's two game-server charges are separate and unknown; obtain their actual quote.
+Third-party stats subscriptions, backups, tax, refunds and disputes may add costs.
+PayPal's current ZA fee table lists a standard domestic commercial rate of 3.40% + fixed fee,
+and an all-other-markets international rate of 4.40% + fixed fee; USD fixed fee is $0.30.
+At $3 this is approximately $0.40 domestic or $0.43 international before any other fees.
+Actual product rates, VAT, conversion, withdrawal fees and merchant eligibility must be checked.
+https://www.paypal.com/za/business/paypal-business-fees
+Do not treat $3 as a guaranteed R50. Exchange rates and bank conversion charges vary.
+Revenue planning: supporters x $3 minus payment fees, game hosting, site services and other costs.
+
+MAINTENANCE
+Weekly: check Discord links, server/announcement accuracy, reports and payment/role failures.
+Monthly: review provider invoices, access permissions, dependency/security updates and restore tests.
+Before each launch/update: test mobile navigation, public access, status data and connection steps.
+Keep backups of content and database; document a rollback and outage contact.
+
+EDITABLE FILES
+dist/content.js — confirmed values, Discord, server listings, announcements and fictional players.
+dist/app.js — page copy, membership content and browser interactions.
+dist/styles.css — design, typography and responsive layouts.
+dist/mark.svg — editable community emblem. Google Fonts are optional external font requests;
+fallback system fonts work when they are blocked.
+USD/month and next-week wording are assumptions identified in the preview and this plan.
