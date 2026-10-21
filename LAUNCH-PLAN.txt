@@ -114,3 +114,7 @@ Takeaway: make server facts and player history easy to find. No competitor asset
 rankings, branding or layout were reused. Original amber tactical design retained.
 Updated processor recommendation: evaluate Paystack in ZAR, per the subsequent fee comparison.
 Earlier PayPal notes above remain background research, not the current preferred option.
+
+LOCAL HOSTING — 21 OCTOBER 2026
+Start Wardogs.cmd launches this site at http://localhost:1026 using Node.js 22+, with no install/build step. Stop Wardogs.cmd shuts down only this site. Local hosting binds to this computer only. Runtime details and logs are ignored in .local/. GitHub pushes do not automatically deploy the existing Sites preview.
+

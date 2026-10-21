@@ -1,0 +1,12 @@
+{
+  "name": "wardogs-zuid-afrika",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wardogs Zuid Afrika community website and local launcher",
+  "scripts": {
+    "start": "node local-server.mjs --open",
+    "serve": "node local-server.mjs",
+    "stop": "node stop-local.mjs"
+  },
+  "engines": { "node": ">=22" }
+}
