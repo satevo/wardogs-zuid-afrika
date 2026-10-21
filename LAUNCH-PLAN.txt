@@ -2,10 +2,10 @@ WARDOGS ZUID AFRIKA — BUILD AND LAUNCH PLAN
 Prepared 20 October 2026
 
 CONFIRMED
-Game: Wardogs. Community: Wardogs Zuid Afrika. South African hosting through GG Host.
-Two planned servers: Server 01 / 50 slots; Server 02 / 90 slots; total 140 planned slots.
+Game: Wardogs. Community: Wardogs Zuid Afrika. South African hosting through the hosting provider.
+Two planned servers: Server 01 / 100 players, 50 supporter-reserved slots; Server 02 / 100 players, 90 supporter-reserved slots. Total 200 player capacity and 140 supporter-reserved slots within that capacity.
 Discord: https://discord.gg/Vcq8dGTGcN
-Supporter price: $3. Preview assumes USD and monthly billing; confirm before sales.
+Memberships: One Server $3 / roughly R50; Both Servers $5 / R90. Monthly billing and the existing $3 tier covering one chosen server are explicit preview assumptions. Confirm final billing currency and terms before sales.
 Launch target: next week, interpreted as 26 October–1 November 2026; not a fixed date.
 
 FIRST RELEASE
@@ -33,11 +33,11 @@ Replace any stale relative launch copy on launch day. Switch statuses only after
 Preview hosting begins private; public access and a custom domain are separate launch actions.
 
 PHASE 2 — REAL SERVER STATUS AND PLAYER DATA
-Obtain read-only access or server IDs from GG Host and the selected stats service.
+Obtain read-only access or server IDs from the hosting provider and the selected stats service.
 Candidate: WARDOGS NOW's documented public API, enabled per server, with stats tracking on.
 Its documentation describes server state/count, leaderboard and SteamID64 player endpoints.
 https://wardogsnow.com/developers/stats-api
-This third-party service is not connected or assumed to be included in GG Host.
+This third-party service is not connected or assumed to be included in the hosting provider.
 Verify compatibility, terms, uptime, permissions and costs with the provider.
 Map online to live, preserve manual planned/testing states, cache results, show last refresh,
 and report unavailable/stale data on failures. Demo stats must never silently appear as real.
@@ -80,7 +80,7 @@ Website: reserve $0–$15/month for a small information site; actual Sites plan,
 and any custom-domain support must be checked in the account. No hosting price was verified here.
 Domain: allow roughly $10–$30/year, depending on extension and registrar; obtain a current quote.
 Accounts/database/bot/monitoring later: initially budget another $5–$25/month, then revise from usage.
-GG Host's two game-server charges are separate and unknown; obtain their actual quote.
+the hosting provider's two game-server charges are separate and unknown; obtain their actual quote.
 Third-party stats subscriptions, backups, tax, refunds and disputes may add costs.
 PayPal's current ZA fee table lists a standard domestic commercial rate of 3.40% + fixed fee,
 and an all-other-markets international rate of 4.40% + fixed fee; USD fixed fee is $0.30.
@@ -103,3 +103,14 @@ dist/styles.css — design, typography and responsive layouts.
 dist/mark.svg — editable community emblem. Google Fonts are optional external font requests;
 fallback system fonts work when they are blocked.
 USD/month and next-week wording are assumptions identified in the preview and this plan.
+
+REVISION — 21 OCTOBER 2026
+Provider identity removed from all current website files and this plan.
+Reserved-slot sync, allocation and queue policy require validation before memberships open.
+Both Servers covers both servers; it does not increase either server beyond 100 players.
+USD/ZAR amounts are proposed price options, not a guaranteed exchange rate.
+Competitor reference: https://wardogs.co.za/ — direct fetch returned 403; indexed pages reviewed.
+Takeaway: make server facts and player history easy to find. No competitor assets, copy,
+rankings, branding or layout were reused. Original amber tactical design retained.
+Updated processor recommendation: evaluate Paystack in ZAR, per the subsequent fee comparison.
+Earlier PayPal notes above remain background research, not the current preferred option.
