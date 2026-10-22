@@ -118,3 +118,11 @@ Earlier PayPal notes above remain background research, not the current preferred
 LOCAL HOSTING — 21 OCTOBER 2026
 Start Wardogs.cmd launches this site at http://localhost:1026 using Node.js 22+, with no install/build step. Stop Wardogs.cmd shuts down only this site. Local hosting binds to this computer only. Runtime details and logs are ignored in .local/. GitHub pushes do not automatically deploy the existing Sites preview.
 
+
+USD ACCOUNT PREPARATION — 22 OCTOBER 2026
+USD pricing is now explicit: One Server 3 USD/month; Both Servers 5 USD/month. Old rand price alternatives were removed from the current interface. Discord OAuth and persistent member sessions are implemented and tested with simulated provider responses; real sign-in requires Discord application credentials in ignored .env. Payments remain disconnected pending processor choice. Payfast's documented subscriptions use ZAR; PayPal Subscriptions is recommended for fixed USD plans. A merchant account, a public HTTPS callback/webhook address, provider sandbox configuration and real sandbox verification are still needed. Live charging remains disabled. Discord role syncing and game-server reserved-slot integration remain outstanding.
+
+
+PAYPAL SANDBOX AND CLOUDFLARE — 22 OCTOBER 2026
+Confirmed processor: PayPal, fixed 3 USD and 5 USD monthly plans. Business account is being set up; no domain yet. Implemented sandbox-only subscription creation, server-side price validation, signature-verified webhooks, persistent records, member status refresh and cancellation, and private settings/setup helpers. Cloudflare Quick Tunnel client and launcher are configured for temporary public HTTPS testing. Live mode is rejected by code. Verified 17 automated tests with mocked provider data, 19 browser checks, public HTTPS reachability and private-path protection. Genuine PayPal sandbox approval/renewal/cancellation is not yet verified: credentials are missing. Final live launch also requires stable hosting/domain, merchant approval, policies, role sync and reserved-access integration. See SETUP-PAYMENTS.md. Previous processor recommendations above are historical.
+

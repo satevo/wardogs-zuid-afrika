@@ -4,8 +4,18 @@ import {resolve,relative,extname,sep,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {randomBytes,timingSafeEqual} from 'node:crypto';
 import {execFile} from 'node:child_process';
+import {existsSync,readFileSync} from 'node:fs';
+import {createAccounts} from './server/accounts.mjs';
+import {createPayments} from './server/paypal.mjs';
 
 const directory=dirname(fileURLToPath(import.meta.url));
+if(existsSync(resolve(directory,'.env')))process.loadEnvFile(resolve(directory,'.env'));
+const siteUrl=new URL(process.env.WARDOGS_SITE_URL||process.env.SITE_URL||'http://localhost:1026').origin;
+let savedPayPal={};const paymentSettings=resolve(directory,'.local/paypal-sandbox.json');
+if(existsSync(paymentSettings))savedPayPal=JSON.parse(readFileSync(paymentSettings,'utf8'));
+let payments;
+const accounts=createAccounts({database:resolve(directory,'.local/accounts.sqlite'),siteUrl,clientId:process.env.DISCORD_CLIENT_ID,clientSecret:process.env.DISCORD_CLIENT_SECRET,paymentStatus:()=>({provider:'paypal',mode:'sandbox',currency:'USD',ready:payments?.ready||false,liveEnabled:false})});
+payments=createPayments({database:resolve(directory,'.local/payments.sqlite'),siteUrl,accounts,clientId:process.env.PAYPAL_CLIENT_ID,clientSecret:process.env.PAYPAL_CLIENT_SECRET,environment:process.env.PAYPAL_ENVIRONMENT||'sandbox',planIds:{'one-server':process.env.PAYPAL_ONE_SERVER_PLAN_ID||savedPayPal.plans?.['one-server'],'both-servers':process.env.PAYPAL_BOTH_SERVERS_PLAN_ID||savedPayPal.plans?.['both-servers']},webhookId:process.env.PAYPAL_WEBHOOK_ID||savedPayPal.webhookId});
 const root=resolve(directory,'dist');
 const runtimeFile=resolve(directory,'.local/runtime.json');
 const host='127.0.0.1', port=1026, url=`http://localhost:${port}`;
@@ -18,8 +28,10 @@ const server=http.createServer(async(req,res)=>{
   res.setHeader('X-Content-Type-Options','nosniff');
   res.setHeader('Cache-Control','no-store');
   // Only requests addressed to this local listener are accepted.
-  if(![`localhost:${port}`,`127.0.0.1:${port}`].includes(req.headers.host)){res.writeHead(403);res.end('Local requests only.');return;}
+  if(![`localhost:${port}`,`127.0.0.1:${port}`,new URL(siteUrl).host].includes(req.headers.host)){res.writeHead(403);res.end('Request host not allowed.');return;}
   let pathname;try{pathname=decodeURIComponent(new URL(req.url,url).pathname);}catch{res.writeHead(400);res.end('Invalid address.');return;}
+  if(pathname.startsWith('/__local/')&&req.headers.host!==`localhost:${port}`&&req.headers.host!==`127.0.0.1:${port}`){res.writeHead(404);res.end('Not found.');return;}
+  try{if(await accounts.handle(req,res,pathname))return;if(await payments.handle(req,res,pathname))return;}catch{res.writeHead(500,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'The request could not be completed.'}));return;}
   if(pathname==='/__local/health'&&req.method==='GET'){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({app,port}));return;}
   if(pathname==='/__local/stop'&&req.method==='POST'){
     const supplied=Buffer.from(String(req.headers['x-wardogs-local-token']||''));const expected=Buffer.from(token);
@@ -40,15 +52,15 @@ const server=http.createServer(async(req,res)=>{
 async function shutdown(){
   if(stopping)return;stopping=true;
   try{const saved=JSON.parse(await readFile(runtimeFile,'utf8'));if(saved.token===token)await unlink(runtimeFile);}catch{}
-  server.close(()=>process.exit(0));server.closeIdleConnections();
+  server.close(()=>{accounts.close();payments.close();process.exit(0);});server.closeIdleConnections();
   setTimeout(()=>{server.closeAllConnections();process.exit(0);},2000).unref();
 }
 server.on('error',async error=>{
   if(error.code==='EADDRINUSE'){
-    try{const response=await fetch(`http://${host}:${port}/__local/health`,{signal:AbortSignal.timeout(1500)});const existing=await response.json();if(existing.app===app){console.log(`Wardogs is already running at ${url}`);open();return;}}catch{}
+    try{const response=await fetch(`http://${host}:${port}/__local/health`,{signal:AbortSignal.timeout(1500)});const existing=await response.json();if(existing.app===app){console.log(`Wardogs is already running at ${url}`);accounts.close();payments.close();open();return;}}catch{}
     console.error(`Port ${port} is in use by another application. Wardogs did not stop or change it.`);
   }else console.error(`Could not start Wardogs: ${error.message}`);
-  process.exitCode=1;
+  accounts.close();payments.close();process.exitCode=1;
 });
 server.listen(port,host,async()=>{
   try{await mkdir(dirname(runtimeFile),{recursive:true});await writeFile(runtimeFile,JSON.stringify({app,port,pid:process.pid,token}));}

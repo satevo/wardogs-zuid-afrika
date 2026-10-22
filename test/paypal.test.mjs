@@ -1,0 +1,37 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createPayments,paypalClient,validatePlan} from '../server/paypal.mjs';
+const origin='https://wardogs-test.example';
+const plan=(value='3.00')=>({status:'ACTIVE',billing_cycles:[{tenure_type:'REGULAR',frequency:{interval_unit:'MONTH',interval_count:1},total_cycles:0,pricing_scheme:{fixed_price:{currency_code:'USD',value}}}],payment_preferences:{setup_fee:{value:'0.00'}}});
+function response(){return {status:200,body:'',writeHead(status){this.status=status;},end(body=''){this.body=body;}};}
+function setup(t,options={}){
+  const state={creates:0,reads:0,remote:null,signature:'SUCCESS',...options};
+  const service=createPayments({database:':memory:',siteUrl:origin,accounts:{user:req=>req.headers.cookie?{discordId:req.headers.cookie}:null},clientId:'fake-id',clientSecret:'fake-secret',planIds:{'one-server':'P-ONE','both-servers':'P-BOTH'},webhookId:'HOOK-TEST',request:async(url,request)=>{
+    assert.ok(url.startsWith('https://api-m.sandbox.paypal.com/'),'Only sandbox calls allowed');
+    const path=new URL(url).pathname;let data;
+    if(path==='/v1/oauth2/token')data={access_token:'fake-token',expires_in:300};
+    else if(path.startsWith('/v1/billing/plans/'))data=plan(state.wrongPrice?'0.01':path.endsWith('P-BOTH')?'5.00':'3.00');
+    else if(path==='/v1/billing/subscriptions'&&request.method==='POST'){state.creates++;state.lastCreate=JSON.parse(request.body);state.remote={id:'I-TEST',plan_id:state.lastCreate.plan_id,custom_id:state.lastCreate.custom_id,status:'APPROVAL_PENDING'};data={id:'I-TEST',links:[{rel:'approve',href:'https://www.sandbox.paypal.com/approve?token=test'}]};}
+    else if(path==='/v1/notifications/verify-webhook-signature')data={verification_status:state.signature};
+    else if(path.endsWith('/cancel')){state.remote.status='CANCELLED';return {ok:true,status:204};}
+    else if(path==='/v1/billing/subscriptions/I-TEST'){state.reads++;data=state.remote;}
+    else throw Error('Unexpected mock request: '+path);
+    return {ok:true,status:200,json:async()=>data};
+  }});t.after(()=>service.close());return {service,state};
+}
+async function call(service,path,data,{member='member-a',origin:requestOrigin=origin,headers={}}={}){
+  const request={method:data===undefined?'GET':'POST',headers:{...(member?{cookie:member}:{}),origin:requestOrigin,'content-type':'application/json',...headers},async *[Symbol.asyncIterator](){yield Buffer.from(JSON.stringify(data));}};
+  const res=response();await service.handle(request,res,path);return {status:res.status,body:JSON.parse(res.body||'{}')};
+}
+const checkout=service=>call(service,'/api/billing/checkout',{plan:'one-server',server:'za-01',acceptedSandboxTerms:true,amount:'0.01',plan_id:'ATTACKER'});
+const webhook=(service,id='EV-1')=>call(service,'/api/paypal/webhook',{id,event_type:'BILLING.SUBSCRIPTION.ACTIVATED',resource:{id:'I-TEST',status:'ACTIVE'}},{member:null,headers:{'paypal-auth-algo':'SHA256withRSA','paypal-cert-url':'https://api.paypal.com/cert','paypal-transmission-id':'TX-1','paypal-transmission-sig':'test','paypal-transmission-time':'2026-10-22T00:00:00Z'}});
+test('live mode cannot be enabled',()=>assert.throws(()=>paypalClient({environment:'live'}),/disabled/));
+test('plan validation rejects wrong amount, currency and billing interval',()=>{assert.throws(()=>validatePlan(plan('0.01'),'one-server'));const wrong=plan();wrong.billing_cycles[0].pricing_scheme.fixed_price.currency_code='ZAR';assert.throws(()=>validatePlan(wrong,'one-server'));const annual=plan();annual.billing_cycles[0].frequency.interval_unit='YEAR';assert.throws(()=>validatePlan(annual,'one-server'));});
+test('checkout requires authentication, same origin, valid server and sandbox consent',async t=>{const {service,state}=setup(t);assert.equal((await call(service,'/api/billing/checkout',{}, {member:null})).status,401);assert.equal((await call(service,'/api/billing/checkout',{}, {origin:'https://evil.example'})).status,403);assert.equal((await call(service,'/api/billing/checkout',{plan:'one-server',server:'evil',acceptedSandboxTerms:true})).status,400);assert.equal((await call(service,'/api/billing/checkout',{plan:'one-server',server:'za-01'})).status,400);assert.equal(state.creates,0);});
+test('server controls price and plan; concurrent checkout clicks reuse one subscription',async t=>{const {service,state}=setup(t);const results=await Promise.all([checkout(service),checkout(service)]);assert.ok(results.every(r=>r.status===200));assert.equal(state.creates,1);assert.equal(state.lastCreate.plan_id,'P-ONE');assert.equal(state.lastCreate.amount,undefined);assert.equal(state.lastCreate.plan,undefined);assert.equal(service.summary('member-a')[0].status,'APPROVAL_PENDING');});
+test('wrong configured price fails before subscription creation',async t=>{const {service,state}=setup(t,{wrongPrice:true});assert.equal((await checkout(service)).status,502);assert.equal(state.creates,0);});
+test('another member cannot cancel a subscription',async t=>{const {service}=setup(t);await checkout(service);const id=service.summary('member-a')[0].id;assert.equal((await call(service,'/api/billing/cancel',{id},{member:'member-b'})).status,404);});
+test('unverified webhook cannot change a subscription',async t=>{const {service,state}=setup(t,{signature:'FAILURE'});await checkout(service);assert.equal((await webhook(service)).status,400);assert.equal(service.summary('member-a')[0].status,'APPROVAL_PENDING');assert.equal(state.reads,0);});
+test('verified webhooks fetch current provider state and deduplicate replays',async t=>{const {service,state}=setup(t);await checkout(service);assert.equal((await webhook(service)).status,200);assert.equal(service.summary('member-a')[0].status,'APPROVAL_PENDING','Untrusted event status must not activate membership');state.remote.status='ACTIVE';state.remote.billing_info={last_payment:{amount:{currency_code:'USD',value:'3.00'}},next_billing_time:'2099-01-01T00:00:00Z'};assert.equal((await webhook(service,'EV-2')).status,200);const reads=state.reads;assert.equal((await webhook(service,'EV-2')).status,200);assert.equal(state.reads,reads);assert.equal(service.summary('member-a')[0].status,'ACTIVE');assert.equal(service.summary('member-a')[0].accessConnected,false);});
+test('cancellation is confirmed with PayPal and keeps ownership',async t=>{const {service,state}=setup(t);await checkout(service);state.remote.status='ACTIVE';const id=service.summary('member-a')[0].id;assert.equal((await call(service,'/api/billing/cancel',{id})).status,200);assert.equal(service.summary('member-a')[0].status,'CANCELLED');});
+test('changed provider identity is rejected',async t=>{const {service,state}=setup(t);await checkout(service);state.remote.custom_id='different';const id=service.summary('member-a')[0].id;assert.equal((await call(service,'/api/billing/refresh',{id})).status,502);assert.equal(service.summary('member-a')[0].status,'APPROVAL_PENDING');});
