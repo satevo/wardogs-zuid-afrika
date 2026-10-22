@@ -27,7 +27,15 @@ Save changes and refresh the browser. All routes use hashes, such as `http://loc
 
 Navigation, server filters, Discord links, FAQs and demo interactions work. Stats and player profiles are fictional. Discord sign-in and member sessions are implemented but require configuration. Staff editing, payments, reserved-slot access and Discord role syncing are not connected. No checkout can charge money.
 
-Memberships are now priced in USD: One Server $3/month; Both Servers $5/month. PayPal USD subscriptions are implemented in sandbox-only mode; sandbox credentials and a real sandbox transaction are still outstanding.
+Community-support donation subscriptions are priced in USD, with Whitelist queue priority or Reserved held-back capacity on one or both servers. Each renews every 1, 3 or 6 months at the full displayed period amount.
+
+| Offer | Monthly | Every 3 months | Every 6 months |
+|---|---:|---:|---:|
+| Whitelist — one server | $2 | $5.50 | $10 |
+| Whitelist — both servers | $3 | $8 | $15 |
+| Reserved — one server | $4 | $11 | $21 |
+| Reserved — both servers | $6 | $16.50 | $31.50 |
+ PayPal USD subscriptions are implemented in sandbox-only mode; sandbox credentials and a real sandbox transaction are still outstanding.
 
 ## Files and credentials
 
@@ -45,6 +53,8 @@ PayPal is selected for fixed USD subscriptions. Cloudflare test tunnelling is im
 
 ## PayPal sandbox and Cloudflare
 
-Read [SETUP-PAYMENTS.md](SETUP-PAYMENTS.md) for the complete connection steps. The Start Cloudflare Preview launcher provides a temporary HTTPS address and restarts the backend when local settings change. Use Edit Local Settings to enter private credentials on this computer, then Set Up PayPal Sandbox to create the two USD monthly plans and webhook. Temporary tunnel URLs change when restarted; update callbacks and webhooks accordingly.
+Read [SETUP-PAYMENTS.md](SETUP-PAYMENTS.md) for the complete connection steps. The Start Cloudflare Preview launcher provides a temporary HTTPS address and restarts the backend when local settings change. Use Edit Local Settings to enter private credentials on this computer, then Set Up PayPal Sandbox to create all 12 USD offer/period plans and webhook. Temporary tunnel URLs change when restarted; update callbacks and webhooks accordingly.
 
 Billing code verifies plans and webhook signatures, associates subscriptions with the signed-in Discord identity, prevents duplicate checkout clicks and checks ownership for refresh/cancellation. No live endpoint exists. Automated tests use mocked provider responses; a genuine sandbox purchase has not yet been verified.
+
+Offer source: `dist/offers.json`. Run `npm run sync:offers` after editing it to regenerate browser data. Backend plan validation reads that same source. Only the four current donation offers and their 12 billing combinations are supported. The previous two offers were removed. Benefits and automatic role/game access remain unconnected.

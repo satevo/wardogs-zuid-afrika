@@ -126,3 +126,11 @@ USD pricing is now explicit: One Server 3 USD/month; Both Servers 5 USD/month. O
 PAYPAL SANDBOX AND CLOUDFLARE — 22 OCTOBER 2026
 Confirmed processor: PayPal, fixed 3 USD and 5 USD monthly plans. Business account is being set up; no domain yet. Implemented sandbox-only subscription creation, server-side price validation, signature-verified webhooks, persistent records, member status refresh and cancellation, and private settings/setup helpers. Cloudflare Quick Tunnel client and launcher are configured for temporary public HTTPS testing. Live mode is rejected by code. Verified 17 automated tests with mocked provider data, 19 browser checks, public HTTPS reachability and private-path protection. Genuine PayPal sandbox approval/renewal/cancellation is not yet verified: credentials are missing. Final live launch also requires stable hosting/domain, merchant approval, policies, role sync and reserved-access integration. See SETUP-PAYMENTS.md. Previous processor recommendations above are historical.
 
+
+DONATION OFFERS — 22 OCTOBER 2026
+Current offers supersede earlier two-tier pricing for new subscriptions. Whitelist one server: 2 / 5.50 / 10 USD. Whitelist both servers: 3 / 8 / 15 USD. Reserved one server: 4 / 11 / 21 USD. Reserved both servers: 6 / 16.50 / 31.50 USD. These amounts are charged in full every 1, 3 or 6 months respectively, renewing until cancelled. Promoted as voluntary community-support donation subscriptions with benefits. Whitelist is queue priority when a server is full; Reserved is capacity held back for eligible members to join or stay. Actual benefits and role syncing remain disconnected. A shared offer catalog drives 12 new PayPal sandbox plans; previous 3/5 USD plans and existing subscription terms are retained, not repriced. Live payments remain disabled.
+
+
+OLD OFFERS REMOVED — 22 OCTOBER 2026
+User requested removing the old offers entirely. Verified zero old subscription records and no saved PayPal plan configuration. Removed legacy offer definitions and validation compatibility. Only the four current donation offers and their 12 billing combinations are supported. No payment records were deleted and no real payments were processed.
+

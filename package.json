@@ -9,7 +9,8 @@
     "stop": "node stop-local.mjs",
     "test": "node --test test/*.test.mjs",
     "setup:paypal": "node setup-paypal.mjs",
-    "preview:cloudflare": "node cloudflare-preview.mjs"
+    "preview:cloudflare": "node cloudflare-preview.mjs",
+    "sync:offers": "node scripts/sync-offers.mjs"
   },
   "engines": { "node": ">=22" }
 }

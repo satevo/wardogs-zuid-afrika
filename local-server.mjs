@@ -7,6 +7,7 @@ import {execFile} from 'node:child_process';
 import {existsSync,readFileSync} from 'node:fs';
 import {createAccounts} from './server/accounts.mjs';
 import {createPayments} from './server/paypal.mjs';
+import {TIERS} from './server/offers.mjs';
 
 const directory=dirname(fileURLToPath(import.meta.url));
 if(existsSync(resolve(directory,'.env')))process.loadEnvFile(resolve(directory,'.env'));
@@ -15,7 +16,7 @@ let savedPayPal={};const paymentSettings=resolve(directory,'.local/paypal-sandbo
 if(existsSync(paymentSettings))savedPayPal=JSON.parse(readFileSync(paymentSettings,'utf8'));
 let payments;
 const accounts=createAccounts({database:resolve(directory,'.local/accounts.sqlite'),siteUrl,clientId:process.env.DISCORD_CLIENT_ID,clientSecret:process.env.DISCORD_CLIENT_SECRET,paymentStatus:()=>({provider:'paypal',mode:'sandbox',currency:'USD',ready:payments?.ready||false,liveEnabled:false})});
-payments=createPayments({database:resolve(directory,'.local/payments.sqlite'),siteUrl,accounts,clientId:process.env.PAYPAL_CLIENT_ID,clientSecret:process.env.PAYPAL_CLIENT_SECRET,environment:process.env.PAYPAL_ENVIRONMENT||'sandbox',planIds:{'one-server':process.env.PAYPAL_ONE_SERVER_PLAN_ID||savedPayPal.plans?.['one-server'],'both-servers':process.env.PAYPAL_BOTH_SERVERS_PLAN_ID||savedPayPal.plans?.['both-servers']},webhookId:process.env.PAYPAL_WEBHOOK_ID||savedPayPal.webhookId});
+payments=createPayments({database:resolve(directory,'.local/payments.sqlite'),siteUrl,accounts,clientId:process.env.PAYPAL_CLIENT_ID,clientSecret:process.env.PAYPAL_CLIENT_SECRET,environment:process.env.PAYPAL_ENVIRONMENT||'sandbox',planIds:Object.fromEntries(Object.keys(TIERS).map(id=>[id,process.env['PAYPAL_PLAN_'+id.toUpperCase().replaceAll('-','_')]||savedPayPal.plans?.[id]])),webhookId:process.env.PAYPAL_WEBHOOK_ID||savedPayPal.webhookId});
 const root=resolve(directory,'dist');
 const runtimeFile=resolve(directory,'.local/runtime.json');
 const host='127.0.0.1', port=1026, url=`http://localhost:${port}`;
