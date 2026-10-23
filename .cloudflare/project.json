@@ -1,0 +1,10 @@
+{
+  "account_id": "8f8d5557a64ce8f6ca52559d97db7bf0",
+  "project_id": "5442bc45-2742-4f40-98ba-ac66c1d08d59",
+  "project_name": "wardogs-zuid-afrika",
+  "url": "https://wardogs-zuid-afrika.pages.dev",
+  "repository": "https://github.com/satevo/wardogs-zuid-afrika",
+  "branch": "main",
+  "build_command": "npm run build:cloudflare",
+  "output_directory": "dist-cloudflare"
+}

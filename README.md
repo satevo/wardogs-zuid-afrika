@@ -1,5 +1,7 @@
 # Wardogs Zuid Afrika
 
+Public Cloudflare Pages site: **https://wardogs-zuid-afrika.pages.dev**. Linked GitHub repository: **https://github.com/satevo/wardogs-zuid-afrika**. Pushes to `main` deploy automatically. See [DEPLOY-CLOUDFLARE.md](DEPLOY-CLOUDFLARE.md) for the build settings and account/billing migration status.
+
 Pre-launch community website for two South African Wardogs servers. Each supports 100 players, with 50 supporter-reserved slots on Server 01 and 90 on Server 02.
 
 ## Launch locally
