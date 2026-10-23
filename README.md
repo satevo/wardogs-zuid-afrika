@@ -18,7 +18,8 @@ The server listens only on this computer. It does not expose the site to the int
 
 ## Edit the site
 
-- `dist/content.js`: servers, Discord link, announcements, membership prices and demo players.
+- `dist/content.js`: servers, Discord link, announcements and demo players.
+- `dist/offers.json`: reserved-slot donation offers, prices and billing periods.
 - `dist/app.js`: pages, copy and interactions.
 - `dist/styles.css`: styling and responsive layout.
 - `dist/mark.svg`: editable community emblem.
@@ -29,12 +30,10 @@ Save changes and refresh the browser. All routes use hashes, such as `http://loc
 
 Navigation, server filters, Discord links, FAQs and demo interactions work. Stats and player profiles are fictional. Discord sign-in and member sessions are implemented but require configuration. Staff editing, payments, reserved-slot access and Discord role syncing are not connected. No checkout can charge money.
 
-Community-support donation subscriptions are priced in USD, with Whitelist queue priority or Reserved held-back capacity on one or both servers. Each renews every 1, 3 or 6 months at the full displayed period amount.
+Community-support donation subscriptions are priced in USD, with Reserved held-back capacity on one or both servers. Each renews every 1, 3 or 6 months at the full displayed period amount.
 
 | Offer | Monthly | Every 3 months | Every 6 months |
 |---|---:|---:|---:|
-| Whitelist — one server | $2 | $5.50 | $10 |
-| Whitelist — both servers | $3 | $8 | $15 |
 | Reserved — one server | $4 | $11 | $21 |
 | Reserved — both servers | $6 | $16.50 | $31.50 |
  PayPal USD subscriptions are implemented in sandbox-only mode; sandbox credentials and a real sandbox transaction are still outstanding.
@@ -43,7 +42,7 @@ Community-support donation subscriptions are priced in USD, with Whitelist queue
 
 Only `dist/` is served to the browser. Local runtime information is stored in ignored `.local/` and removed on normal shutdown. Keep credentials in an ignored environment file or hosting secret store; never put them in `dist/`. No live payment credentials are included.
 
-The `.openai/hosting.json` file belongs to the existing separate Sites preview. It is not required for local hosting, and pushing this repository does not automatically publish or deploy anything. The detailed roadmap is in `LAUNCH-PLAN.txt`.
+The `.openai/hosting.json` file belongs to the existing separate Sites preview. It is not required for local hosting, and pushing to development saves a checkpoint; pushing to main automatically publishes to Cloudflare Pages. The detailed roadmap is in `LAUNCH-PLAN.txt`.
 
 ## Discord sign-in configuration
 
@@ -55,8 +54,8 @@ PayPal is selected for fixed USD subscriptions. Cloudflare test tunnelling is im
 
 ## PayPal sandbox and Cloudflare
 
-Read [SETUP-PAYMENTS.md](SETUP-PAYMENTS.md) for the complete connection steps. The Start Cloudflare Preview launcher provides a temporary HTTPS address and restarts the backend when local settings change. Use Edit Local Settings to enter private credentials on this computer, then Set Up PayPal Sandbox to create all 12 USD offer/period plans and webhook. Temporary tunnel URLs change when restarted; update callbacks and webhooks accordingly.
+Read [SETUP-PAYMENTS.md](SETUP-PAYMENTS.md) for the complete connection steps. The Start Cloudflare Preview launcher provides a temporary HTTPS address and restarts the backend when local settings change. Use Edit Local Settings to enter private credentials on this computer, then Set Up PayPal Sandbox to create all 6 USD offer/period plans and webhook. Temporary tunnel URLs change when restarted; update callbacks and webhooks accordingly.
 
 Billing code verifies plans and webhook signatures, associates subscriptions with the signed-in Discord identity, prevents duplicate checkout clicks and checks ownership for refresh/cancellation. No live endpoint exists. Automated tests use mocked provider responses; a genuine sandbox purchase has not yet been verified.
 
-Offer source: `dist/offers.json`. Run `npm run sync:offers` after editing it to regenerate browser data. Backend plan validation reads that same source. Only the four current donation offers and their 12 billing combinations are supported. The previous two offers were removed. Benefits and automatic role/game access remain unconnected.
+Offer source: `dist/offers.json`. Run `npm run sync:offers` after editing it to regenerate browser data. Backend plan validation reads that same source. Only the two Reserved donation offers and their 6 billing combinations are supported. The previous two offers were removed. Benefits and automatic role/game access remain unconnected.

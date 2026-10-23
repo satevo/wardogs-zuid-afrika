@@ -1,11 +1,9 @@
 # Finish PayPal sandbox setup
 
-The site promotes community-support donation subscriptions with Whitelist queue-priority or Reserved held-back-capacity benefits, on one or both servers. All amounts are USD and charged in full each billing period.
+The site promotes community-support donation subscriptions with Reserved held-back-capacity benefits, on one or both servers. All amounts are USD and charged in full each billing period.
 
 | Offer | Monthly | Every 3 months | Every 6 months |
 |---|---:|---:|---:|
-| Whitelist — one server | $2 | $5.50 | $10 |
-| Whitelist — both servers | $3 | $8 | $15 |
 | Reserved — one server | $4 | $11 | $21 |
 | Reserved — both servers | $6 | $16.50 | $31.50 |
  The billing integration is implemented but has **not yet completed a real PayPal sandbox transaction**. No live payment endpoint exists in this release. Server access and Discord role assignment remain disconnected.
@@ -36,11 +34,11 @@ The Cloudflare launcher restarts the local site when `.env` or the sandbox confi
 
 ## 3. Create the sandbox plans and webhook
 
-Double-click **Set Up PayPal Sandbox.cmd**. It uses `SITE_URL` from `.env` to create a sandbox product, 12 exact USD plans covering all four offers and 1-, 3- and 6-month billing, and the webhook. If setup fails, it preserves progress so you can retry.
+Double-click **Set Up PayPal Sandbox.cmd**. It uses `SITE_URL` from `.env` to create a sandbox product, 6 exact USD plans covering both Reserved offers and 1-, 3- and 6-month billing, and the webhook. If setup fails, it preserves progress so you can retry.
 
 Alternatively: `node setup-paypal.mjs --site-url YOUR_HTTPS_TEST_ADDRESS`.
 
-The helper creates only the 12 current offer/period plans. The previous two offers were removed; there were no legacy subscription records or saved PayPal plan IDs at removal.
+The helper creates only the 6 current Reserved offer/period plans. The previous two offers were removed; there were no legacy subscription records or saved PayPal plan IDs at removal.
 
 IDs are stored in ignored `.local/paypal-sandbox.json`. Secrets remain in `.env`. The webhook address is:
 
