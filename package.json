@@ -11,7 +11,10 @@
     "setup:paypal": "node setup-paypal.mjs",
     "preview:cloudflare": "node cloudflare-preview.mjs",
     "sync:offers": "node scripts/sync-offers.mjs",
-    "build:cloudflare": "node scripts/sync-offers.mjs && node scripts/build-cloudflare.mjs"
+    "build:cloudflare": "node scripts/sync-offers.mjs && node scripts/build-cloudflare.mjs",
+    "start:hosted": "node app.cjs"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  }
 }
